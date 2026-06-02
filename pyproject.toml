@@ -1,0 +1,38 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "helius-rate-limiter"
+version = "0.1.0"
+description = "Quota-aware Helius rate limiter, circuit breaker, and key rotator."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "barobaonguyen" }]
+keywords = ["helius", "rate-limit", "429", "quota", "circuit-breaker"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Internet :: WWW/HTTP",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["build", "pytest", "requests", "ruff"]
+
+[project.urls]
+Homepage = "https://github.com/barobaonguyen/helius-rate-limiter"
+Repository = "https://github.com/barobaonguyen/helius-rate-limiter"
+Issues = "https://github.com/barobaonguyen/helius-rate-limiter/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/helius_limiter"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

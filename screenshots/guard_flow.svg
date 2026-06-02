@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="360" viewBox="0 0 960 360">
+  <rect width="960" height="360" fill="#fbfbfb"/>
+  <text x="42" y="54" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#111827">HeliusGuard request flow</text>
+  <g font-family="Arial, sans-serif" font-size="16" text-anchor="middle">
+    <rect x="55" y="128" width="150" height="64" rx="8" fill="#2563eb"/>
+    <text x="130" y="166" fill="#fff">RateLimiter</text>
+    <rect x="260" y="128" width="150" height="64" rx="8" fill="#0f766e"/>
+    <text x="335" y="166" fill="#fff">QuotaLimiter</text>
+    <rect x="465" y="128" width="150" height="64" rx="8" fill="#7c3aed"/>
+    <text x="540" y="166" fill="#fff">CircuitBreaker</text>
+    <rect x="670" y="128" width="150" height="64" rx="8" fill="#ea580c"/>
+    <text x="745" y="166" fill="#fff">KeyRotator</text>
+    <path d="M205 160 H260" stroke="#6b7280" stroke-width="3"/>
+    <path d="M410 160 H465" stroke="#6b7280" stroke-width="3"/>
+    <path d="M615 160 H670" stroke="#6b7280" stroke-width="3"/>
+    <text x="480" y="252" fill="#374151">429 + "max usage reached" rotates keys, then opens a 24h circuit if all keys are exhausted.</text>
+  </g>
+</svg>
