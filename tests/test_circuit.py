@@ -32,3 +32,14 @@ def test_trip_can_open_long_window(monkeypatch):
     breaker.trip(86_400)
     assert breaker.open_until == 86_410.0
     assert breaker.is_open()
+
+
+def test_events_fire_on_trip_and_reset(monkeypatch):
+    monkeypatch.setattr(circuit.time, "monotonic", lambda: 25.0)
+    events: list[str] = []
+    breaker = CircuitBreaker(failure_threshold=1, open_seconds=30, on_event=events.append)
+
+    breaker.record_failure()
+    breaker.record_success()
+
+    assert events == ["tripped", "reset"]

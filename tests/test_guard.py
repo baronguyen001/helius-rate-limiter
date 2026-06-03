@@ -20,7 +20,8 @@ def quiet_guard(api_keys=None, **kwargs) -> HeliusGuard:
 def test_max_usage_reached_rotates_then_succeeds(monkeypatch):
     monkeypatch.setattr(guard.time, "sleep", lambda seconds: None)
     calls: list[str] = []
-    limiter = quiet_guard()
+    events: list[str] = []
+    limiter = quiet_guard(on_event=events.append)
 
     def fn(api_key):
         calls.append(api_key)
@@ -33,6 +34,7 @@ def test_max_usage_reached_rotates_then_succeeds(monkeypatch):
     assert response is not None
     assert calls == ["k1", "k2"]
     assert limiter.quota.remaining() == 99_999
+    assert events == ["throttled", "rotated"]
 
 
 def test_eight_generic_429s_open_circuit(monkeypatch):
@@ -57,6 +59,8 @@ def test_success_path_charges_requested_credits():
 
 
 def test_quota_exhaustion_skips_request():
-    limiter = quiet_guard(monthly_credits=1)
+    events: list[str] = []
+    limiter = quiet_guard(monthly_credits=1, on_event=events.append)
     limiter.quota.charge(1)
     assert limiter.request(lambda api_key: Response(200, "ok")) is None
+    assert events == ["throttled"]
