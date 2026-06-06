@@ -14,6 +14,12 @@ or open a long 24h circuit, while ordinary transient `429`s use short backoff.
 pip install helius-rate-limiter
 ```
 
+Prometheus metrics are optional:
+
+```bash
+pip install "helius-rate-limiter[prometheus]"
+```
+
 ## 30-second usage
 
 ```python
@@ -76,6 +82,33 @@ def call_helius(api_key: str):
 The same decorators work on `async def` functions when you pass the async primitives from
 `helius_limiter.aio`.
 
+## Token-bucket quickstart
+
+Use the sliding-window `RateLimiter` when you want steady request spacing. Use
+`TokenBucketLimiter` when you want to allow a short burst and then refill at a fixed rate.
+
+```python
+from helius_limiter import TokenBucketLimiter
+
+limiter = TokenBucketLimiter(capacity=20, refill_rate=10)
+
+for payload in payloads:
+    limiter.acquire()
+    send_to_helius(payload)
+```
+
+Async code can use the same model:
+
+```python
+from helius_limiter import AsyncTokenBucketLimiter
+
+limiter = AsyncTokenBucketLimiter(capacity=20, refill_rate=10)
+
+for payload in payloads:
+    await limiter.acquire()
+    await send_to_helius(payload)
+```
+
 ## Metrics hook
 
 ```python
@@ -87,6 +120,23 @@ guard = HeliusGuard(keys, on_event=on_event)
 
 The callback receives `throttled`, `tripped`, `reset`, and `rotated` events when those guard
 or circuit transitions happen. It defaults to `None`.
+
+## Prometheus wiring
+
+```python
+import os
+
+from helius_limiter import HeliusGuard, PrometheusExporter
+
+exporter = PrometheusExporter()
+exporter.start_http_server(port=int(os.getenv("PROMETHEUS_PORT", "8000")))
+
+guard = HeliusGuard(keys, on_event=exporter.on_event)
+```
+
+`PrometheusExporter` increments `helius_limiter_events_total{event="..."}` and updates gauges
+for circuit state and last event timestamp. If `prometheus_client` is not installed, creating
+the exporter raises a clear error telling you to install `helius-rate-limiter[prometheus]`.
 
 ## Knobs
 

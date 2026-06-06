@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0 - 2026-06-06
+
+- Added sync and async token-bucket limiters for burst-friendly request shaping.
+- Added an optional Prometheus exporter for existing guard and circuit event callbacks.
+- Added token-bucket and Prometheus examples plus test coverage for the new optional paths.
+
 ## 0.2.0 - 2026-06-03
 
 - Added asyncio-native rate limiter, quota tracker, circuit breaker, and guard.
