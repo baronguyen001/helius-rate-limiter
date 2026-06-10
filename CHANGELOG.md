@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.4.0 - 2026-06-10
+
+- Added sync and async `AdaptiveLimiter` (AIMD): multiplicatively cut the rate on a 429 /
+  "max usage reached" signal (honoring `Retry-After`) and additively recover toward a ceiling,
+  emitting `backed_off` / `recovered` events.
+- Added `PersistentQuotaTracker` (and async mirror): a calendar-month credit counter backed by a
+  single JSON file with atomic writes, so the monthly count survives process restarts.
+- Hardened `parse_retry_after` to trim blank headers and reject non-finite numeric values; default
+  bounded-exponential backoff behavior is unchanged when the header is absent.
+- Added adaptive and persistent-quota examples plus AIMD, rollover/atomic-write, and Retry-After
+  parse tests.
+
 ## 0.3.0 - 2026-06-06
 
 - Added sync and async token-bucket limiters for burst-friendly request shaping.
