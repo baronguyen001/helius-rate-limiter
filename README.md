@@ -20,6 +20,12 @@ Prometheus metrics are optional:
 pip install "helius-rate-limiter[prometheus]"
 ```
 
+The `httpx` transport is optional:
+
+```bash
+pip install "helius-rate-limiter[httpx]"
+```
+
 ## 30-second usage
 
 ```python
@@ -154,6 +160,67 @@ if not quota.is_exhausted():
 Bring your own writable path; never commit the state file. The async mirror is
 `AsyncPersistentQuotaTracker`.
 
+## Concurrency quickstart
+
+Use `RateLimiter` for request spacing and `ConcurrencyLimiter` for the number of
+requests allowed to be in flight at the same time.
+
+```python
+from helius_limiter import ConcurrencyLimiter, RateLimiter
+
+rate = RateLimiter(rps=10)
+concurrency = ConcurrencyLimiter(max_concurrency=4)
+
+for payload in payloads:
+    rate.acquire()
+    with concurrency:
+        send_to_helius(payload)
+```
+
+The async mirror is `AsyncConcurrencyLimiter`.
+
+## Weighted-cost quickstart
+
+Some Helius methods cost more than one credit. `WeightedCostLimiter` wraps any
+quota object that exposes the existing `charge(credits)` contract.
+
+```python
+from helius_limiter import PersistentQuotaTracker, WeightedCostLimiter
+
+quota = PersistentQuotaTracker("helius_quota.json", max_credits=100_000)
+costs = WeightedCostLimiter(quota, weights={"getProgramAccounts": 10})
+
+response = call_helius("getProgramAccounts")
+costs.charge("getProgramAccounts")  # charges 10 credits by default
+```
+
+The default map includes common RPC methods such as `getBalance`,
+`getTransaction`, `getProgramAccounts`, and `searchAssets`. The async mirror is
+`AsyncWeightedCostLimiter`.
+
+## httpx transport quickstart
+
+Install the optional extra, then pass the transport to `httpx.Client`. The
+transport applies the limiter, circuit breaker, transient retry backoff, and
+`Retry-After` handling inside the HTTP client layer.
+
+```python
+import os
+import httpx
+
+from helius_limiter import HttpxLimiterTransport
+
+transport = HttpxLimiterTransport(rps=10)
+
+with httpx.Client(transport=transport, timeout=20) as client:
+    response = client.get(
+        os.getenv("HELIUS_URL", "https://api.helius.xyz/v0/example-endpoint"),
+        params={"api-key": os.getenv("HELIUS_API_KEY", "")},
+    )
+```
+
+For `requests`, mount `RequestsLimiterAdapter` on a `requests.Session`.
+
 ## Metrics hook
 
 ```python
@@ -164,8 +231,8 @@ guard = HeliusGuard(keys, on_event=on_event)
 ```
 
 The callback receives `throttled`, `tripped`, `reset`, and `rotated` events when those guard
-or circuit transitions happen, plus `backed_off` / `recovered` from `AdaptiveLimiter`. It
-defaults to `None`.
+or circuit transitions happen, `backed_off` / `recovered` from `AdaptiveLimiter`, and
+`acquired` / `released` / `saturated` from `ConcurrencyLimiter`. It defaults to `None`.
 
 ## Prometheus wiring
 
@@ -197,6 +264,6 @@ the exporter raises a clear error telling you to install `helius-rate-limiter[pr
 Works with `requests`, `httpx`, `aiohttp`, or any object exposing `.status_code`, `.text`,
 and `.headers`. You bring the HTTP client.
 
-Powers the on-chain client in **[wallet-cluster-detector](https://github.com/barobaonguyen/wallet-cluster-detector)**.
+Powers the on-chain client in **[wallet-cluster-detector](https://github.com/baronguyen001/wallet-cluster-detector)**.
 
-Built by [barobaonguyen](https://github.com/barobaonguyen). Want the full **scrape -> AI -> alert** bot, not just this piece? → **[Trawlkit](https://github.com/barobaonguyen)** (one-time kit).
+Built by [baronguyen001](https://github.com/baronguyen001). Want the full **scrape -> AI -> alert** bot, not just this piece? **Trawlkit**: https://github.com/baronguyen001

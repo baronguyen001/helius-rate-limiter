@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.5.0 - 2026-06-11
+
+- Added sync and async `ConcurrencyLimiter`: a semaphore-style cap for in-flight
+  requests, with context-manager support and `acquired` / `released` /
+  `saturated` events.
+- Added `WeightedCostLimiter` and `AsyncWeightedCostLimiter` to charge existing
+  quota trackers by Helius endpoint or RPC method weight instead of by request
+  count.
+- Added optional `httpx` transport wrappers and a `requests` adapter fallback
+  that apply limiter, circuit, and backoff behavior inside the HTTP client layer.
+- Added concurrency, weighted-cost, and transport examples plus focused tests for
+  sync/async caps, weighted quota math, and mocked HTTP transport behavior.
+
 ## 0.4.0 - 2026-06-10
 
 - Added sync and async `AdaptiveLimiter` (AIMD): multiplicatively cut the rate on a 429 /

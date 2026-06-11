@@ -4,12 +4,12 @@ build-backend = "hatchling.build"
 
 [project]
 name = "helius-rate-limiter"
-version = "0.4.0"
+version = "0.5.0"
 description = "Quota-aware Helius rate limiter, circuit breaker, and key rotator."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
-authors = [{ name = "barobaonguyen" }]
+authors = [{ name = "baronguyen001" }]
 keywords = ["helius", "rate-limit", "429", "quota", "circuit-breaker"]
 classifiers = [
   "Development Status :: 3 - Alpha",
@@ -23,7 +23,8 @@ classifiers = [
 dependencies = []
 
 [project.optional-dependencies]
-dev = ["build", "mypy", "pytest", "pytest-cov", "requests", "ruff"]
+dev = ["build", "httpx", "mypy", "pytest", "pytest-cov", "requests", "ruff"]
+httpx = ["httpx>=0.27"]
 prometheus = ["prometheus-client>=0.20"]
 
 [project.urls]
