@@ -115,6 +115,26 @@ for payload in payloads:
     await send_to_helius(payload)
 ```
 
+## Leaky-bucket quickstart
+
+`LeakyBucketLimiter` is the opposite shape: instead of accumulating burst
+allowance, it drains a queue at a constant rate, smoothing spiky traffic into a
+steady stream. `try_acquire` drops a request when the bucket is full; `acquire`
+waits for room.
+
+```python
+from helius_limiter import LeakyBucketLimiter
+
+limiter = LeakyBucketLimiter(rate=10, capacity=20)   # 10 req/s drain, burst 20
+
+if limiter.try_acquire():
+    send_to_helius(payload)   # accepted
+else:
+    queue_for_later(payload)  # bucket full, shed load
+
+limiter.acquire()             # or block until there is room
+```
+
 ## Adaptive (AIMD) quickstart
 
 A single `429` on the credit-capped free tier should *slow you down*, not trip

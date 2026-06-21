@@ -7,6 +7,7 @@ from .circuit import CircuitBreaker
 from .concurrency import AsyncConcurrencyLimiter, ConcurrencyLimiter
 from .decorators import rate_limited, with_circuit, with_quota
 from .guard import HeliusGuard
+from .leaky_bucket import AsyncLeakyBucketLimiter, LeakyBucketLimiter
 from .persist import AsyncPersistentQuotaTracker, PersistentQuotaTracker
 from .prometheus import PrometheusExporter, PrometheusUnavailableError
 from .quota import QuotaLimiter
@@ -32,12 +33,14 @@ __all__ = [
     "AsyncPersistentQuotaTracker",
     "AsyncQuotaTracker",
     "AsyncRateLimiter",
+    "AsyncLeakyBucketLimiter",
     "AsyncTokenBucketLimiter",
     "AsyncWeightedCostLimiter",
     "CircuitBreaker",
     "CircuitOpenError",
     "ConcurrencyLimiter",
     "HeliusGuard",
+    "LeakyBucketLimiter",
     "HttpxLimiterTransport",
     "KeyRotator",
     "PersistentQuotaTracker",

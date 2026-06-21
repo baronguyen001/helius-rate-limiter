@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "helius-rate-limiter"
-version = "0.5.0"
+version = "0.6.0"
 description = "Quota-aware Helius rate limiter, circuit breaker, and key rotator."
 readme = "README.md"
 requires-python = ">=3.11"

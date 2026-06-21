@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.6.0 - 2026-06-21
+
+- Added sync and async `LeakyBucketLimiter` / `AsyncLeakyBucketLimiter`: a
+  leaky-bucket algorithm that drains a request queue at a constant rate (output
+  smoothing) to complement the burst-friendly token bucket. `try_acquire` rejects
+  without waiting; `acquire` blocks until there is room; `water_level` reports the
+  current depth. The clock and sleep are injectable, so behaviour is fully
+  deterministic in tests — no real `time.sleep`.
+
 ## 0.5.0 - 2026-06-11
 
 - Added sync and async `ConcurrencyLimiter`: a semaphore-style cap for in-flight
